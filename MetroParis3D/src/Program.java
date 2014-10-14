@@ -1,85 +1,67 @@
+import java.util.ArrayList;
+import java.util.List;
 
+import model.Line;
+import model.Station;
 import processing.core.PApplet;
+import controlP5.ControlP5;
+import dao.DAOConfigurationException;
+import dao.DAOException;
+import dao.DAOFactory;
+import dao.DaoStation;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
- import remixlab.proscene.*;
-/**
- *
- * @author samia
- */
+
 public class Program extends PApplet {
 
-   
+  DAOFactory factory;
+  DaoStation daoStation;
+  ControlP5 cp5;
+  // Scene scene;
 
-MyScene scene;
+  float stationRadius = 10;
+  int pixelPerKm = 100;
+  Line line1;
 
-@Override
-    public void setup() {
-  size(640, 360, P3D);
-  // We instantiate our MyScene class defined below
-  scene = new MyScene(this);
-}
-
-@Override
-public void draw() {
-  background(0);
-}
-
-public void keyPressed() {
-  if((key == 'x') || (key == 'X'))
-    scene.setAnimationPeriod(scene.animationPeriod()-2);
-  if((key == 'y') || (key == 'Y'))
-    scene.setAnimationPeriod(scene.animationPeriod()+2);
-}
-
-class MyScene extends Scene {
-  int nbPart;
-
-  // We need to call super(p) to instantiate the base class
-  public MyScene(PApplet p) {
-    super(p);
+  public static void main(String[] args) {
+    PApplet.main(new String[] {"Program"});
   }
 
-  // Initialization stuff could have also been performed at
-  // setup(), once after the Scene object have been instantiated
-  public void init() {
-    nbPart = 2000;
-    setShortcut('m', Scene.KeyboardAction.ANIMATION);    
-    setAxisIsDrawn(false);
-    setAnimationPeriod(40); // 25Hz
-    startAnimation();
-    smooth();
-  }
+  public void setup() {
+    size(700, 700, P3D);
+    noStroke();
+    cp5 = new ControlP5(this);
+    cp5.addSlider("stationRadius").setPosition(100, 50).setRange(0, 100);
+    cp5.addSlider("pixelPerKm").setPosition(100, 100).setRange(0, 500);
+    // scene = new Scene(this);
 
-  // Define here what is actually going to be drawn.
-  public void proscenium() {
-    parent.pushStyle();
-    strokeWeight(3); // Default
-    beginShape(POINTS);
-    for (int i = 0; i < nbPart; i++) {
-      particle[i].draw();
+    // On remplit la ligne 1 par des stations de la base
+    try {
+      factory = DAOFactory.getInstance();
+      daoStation = factory.getDaoStation();
+
+      List<Station> stations = new ArrayList<Station>();
+      for (int i = 1; i <= 25; i++) {
+        stations.add(daoStation.getStationById(i));
+      }
+      line1 = new Line(this, 1, "Ligne 1", "FFFF00", stations);
+
+    } catch (DAOConfigurationException | DAOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
-    endShape();
-    parent.popStyle();
   }
 
-  // Define here your animation.
-  public void animate() {
-    for (int i = 0; i < nbPart; i++)
-      if(particle[i] != null)
-        particle[i].animate();
+  public void draw() {
+    background(0);
+    lights();
+    // scene.startAnimation();
+    // hint(ENABLE_DEPTH_TEST);
+
+    double latStart = line1.getStations().get(0).getLatitude();
+    double longStart = line1.getStations().get(0).getLongitude();
+    line1.draw(width / 10, height / 10, stationRadius, latStart, longStart, pixelPerKm);
+    // hint(DISABLE_DEPTH_TEST);
+    // camera();
+    // cp5.draw();
   }
-}
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
-    }
-    
 }
