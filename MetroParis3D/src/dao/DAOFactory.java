@@ -28,7 +28,7 @@ public class DAOFactory {
    * Récupère les informations de connexion à la base de données, charge le driver JDBC et retourne
    * une instance de la Factory.
    */
-  public static DAOFactory getInstance() throws DAOConfigurationException {
+  public static DAOFactory getInstance() throws DAOException {
     Properties properties = new Properties();
     String url;
     String driver;
@@ -39,8 +39,7 @@ public class DAOFactory {
     InputStream fileProperties = classLoader.getResourceAsStream(FILE_PROPERTIES);
 
     if (fileProperties == null) {
-      throw new DAOConfigurationException("Le fichier properties " + FILE_PROPERTIES
-          + " est introuvable.");
+      throw new DAOException("Le fichier properties " + FILE_PROPERTIES + " est introuvable.");
     }
 
     try {
@@ -50,14 +49,13 @@ public class DAOFactory {
       user = properties.getProperty(PROPERTY_USER);
       password = properties.getProperty(PROPERTY_PASS);
     } catch (IOException e) {
-      throw new DAOConfigurationException("Impossible de charger le fichier properties "
-          + FILE_PROPERTIES, e);
+      throw new DAOException("Impossible de charger le fichier properties " + FILE_PROPERTIES, e);
     }
 
     try {
       Class.forName(driver);
     } catch (ClassNotFoundException e) {
-      throw new DAOConfigurationException("Le driver est introuvable dans le classpath.", e);
+      throw new DAOException("Le driver est introuvable dans le classpath.", e);
     }
 
     /*
