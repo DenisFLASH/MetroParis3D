@@ -79,4 +79,8 @@ public class DAOFactory {
   public DaoStation getDaoStation() {
     return new DaoStationImpl(this);
   }
+
+  public DaoLine getDaoLine() {
+    return new DaoLineImpl(this);
+  }
 }

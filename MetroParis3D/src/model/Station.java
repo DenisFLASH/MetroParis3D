@@ -13,23 +13,24 @@ public class Station {
 
   public Station() {}
 
-  public Station(int id, String name, int line, double latitude, double longitude) {
-    this.id = id;
-    this.name = name;
-    this.line = line;
-    this.latitude = latitude;
-    this.longitude = longitude;
-  }
-
-  public Station(int id, String name, int line, double latitude, double longitude,
-      List<Station> transferStations) {
-    this.id = id;
-    this.name = name;
-    this.line = line;
-    this.latitude = latitude;
-    this.longitude = longitude;
-    this.transferStations = transferStations;
-  }
+  // Ce constructeur était utilisé pour instancier des stations "en dur", avant d'implémenter JDBC.
+  // public Station(int id, String name, int line, double latitude, double longitude) {
+  // this.id = id;
+  // this.name = name;
+  // this.line = line;
+  // this.latitude = latitude;
+  // this.longitude = longitude;
+  // }
+  //
+  // public Station(int id, String name, int line, double latitude, double longitude,
+  // List<Station> transferStations) {
+  // this.id = id;
+  // this.name = name;
+  // this.line = line;
+  // this.latitude = latitude;
+  // this.longitude = longitude;
+  // this.transferStations = transferStations;
+  // }
 
   public int getId() {
     return id;

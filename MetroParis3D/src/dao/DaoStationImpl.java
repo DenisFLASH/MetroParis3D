@@ -4,12 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import model.Station;
 
 public class DaoStationImpl implements DaoStation {
-  private static final String SQL_SELECT_PAR_ID =
-      "SELECT id, label, id_line, latitude, longitude FROM station WHERE id = ?";
+
+  private static final String SQL_SELECT_PAR_ID = "SELECT * FROM station WHERE id = ?";
+  private static final String SQL_SELECT_PAR_LINE_ID = "SELECT * FROM station WHERE id_line = ?";
 
   private DAOFactory daoFactory;
 
@@ -19,14 +22,6 @@ public class DaoStationImpl implements DaoStation {
 
   @Override
   public Station getStationById(int id) throws DAOException {
-    return find(SQL_SELECT_PAR_ID, id);
-  }
-
-  /*
-   * Méthode générique utilisée pour retrouver une station depuis la base de données, correspondant
-   * à la requête SQL donnée prenant en paramètres les objets passées en argument.
-   */
-  public Station find(String sql, Object... objets) throws DAOException {
     Connection connection = null;
     PreparedStatement preparedStatement = null;
     ResultSet resultSet = null;
@@ -38,19 +33,48 @@ public class DaoStationImpl implements DaoStation {
        * Préparation de la requête avec les objets passés en argument (ici, uniquement un id) et
        * exécution
        */
-      preparedStatement = DAOUtil.initialisationRequetePreparee(connection, sql, false, objets);
+      preparedStatement =
+          DAOUtil.initialisationRequetePreparee(connection, SQL_SELECT_PAR_ID, false, id);
       resultSet = preparedStatement.executeQuery();
       /* Parcours de la ligne de données retournér dans le ResultSet */
       if (resultSet.next()) {
         station = map(resultSet);
       }
     } catch (SQLException e) {
-      throw new DAOException("Erreur dans la méthode 'find()'. " + e.getMessage());
+      throw new DAOException("Erreur dans la méthode 'getStationById()'. " + e.getMessage());
     } finally {
       DAOUtil.fermetureSilencieuse(resultSet, preparedStatement, connection);
     }
 
     return station;
+  }
+
+  @Override
+  public List<Station> getStationsByLineId(int lineId) throws DAOException {
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+    ResultSet resultSet = null;
+    List<Station> stations = new ArrayList<Station>();
+    Station station = null;
+
+    try {
+      connection = daoFactory.getConnection();
+      preparedStatement =
+          DAOUtil.initialisationRequetePreparee(connection, SQL_SELECT_PAR_LINE_ID, false, lineId);
+      resultSet = preparedStatement.executeQuery();
+
+      /* Parcours de la ligne de données retournér dans le ResultSet */
+      while (resultSet.next()) {
+        station = map(resultSet);
+        stations.add(station);
+      }
+    } catch (SQLException e) {
+      throw new DAOException("Erreur dans la méthode 'getStationById()'. " + e.getMessage());
+    } finally {
+      DAOUtil.fermetureSilencieuse(resultSet, preparedStatement, connection);
+    }
+
+    return stations;
   }
 
   /*
@@ -68,4 +92,5 @@ public class DaoStationImpl implements DaoStation {
 
     return station;
   }
+
 }

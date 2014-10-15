@@ -1,5 +1,3 @@
-
-
 import processing.core.PApplet;
 import shapes3d.Tube;
 

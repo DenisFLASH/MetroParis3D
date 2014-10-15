@@ -1,13 +1,11 @@
-import java.util.ArrayList;
-import java.util.List;
-
 import model.Line;
-import model.Station;
 import processing.core.PApplet;
+import remixlab.proscene.Scene;
 import controlP5.ControlP5;
 import dao.DAOConfigurationException;
 import dao.DAOException;
 import dao.DAOFactory;
+import dao.DaoLine;
 import dao.DaoStation;
 
 
@@ -15,12 +13,13 @@ public class Program extends PApplet {
 
   DAOFactory factory;
   DaoStation daoStation;
+  DaoLine daoLine;
   ControlP5 cp5;
-  // Scene scene;
-
-  float stationRadius = 10;
+  Scene scene;
+  float stationRadius = 5;
   int pixelPerKm = 100;
   Line line1;
+  Line line2;
 
   public static void main(String[] args) {
     PApplet.main(new String[] {"Program"});
@@ -32,18 +31,19 @@ public class Program extends PApplet {
     cp5 = new ControlP5(this);
     cp5.addSlider("stationRadius").setPosition(100, 50).setRange(0, 100);
     cp5.addSlider("pixelPerKm").setPosition(100, 100).setRange(0, 500);
-    // scene = new Scene(this);
+    scene = new Scene(this);
+    scene.setRadius(100);
 
-    // On remplit la ligne 1 par des stations de la base
+    // Ligne 1
     try {
       factory = DAOFactory.getInstance();
       daoStation = factory.getDaoStation();
+      daoLine = factory.getDaoLine();
+      line1 = daoLine.getLineById(1);
+      line2 = daoLine.getLineById(2);
 
-      List<Station> stations = new ArrayList<Station>();
-      for (int i = 1; i <= 25; i++) {
-        stations.add(daoStation.getStationById(i));
-      }
-      line1 = new Line(this, 1, "Ligne 1", "FFFF00", stations);
+      line1.setApp(this);
+      line2.setApp(this);
 
     } catch (DAOConfigurationException | DAOException e) {
       // TODO Auto-generated catch block
@@ -54,14 +54,8 @@ public class Program extends PApplet {
   public void draw() {
     background(0);
     lights();
-    // scene.startAnimation();
-    // hint(ENABLE_DEPTH_TEST);
 
-    double latStart = line1.getStations().get(0).getLatitude();
-    double longStart = line1.getStations().get(0).getLongitude();
-    line1.draw(width / 10, height / 10, stationRadius, latStart, longStart, pixelPerKm);
-    // hint(DISABLE_DEPTH_TEST);
-    // camera();
-    // cp5.draw();
+    line1.draw(width / 10, height / 10, stationRadius, pixelPerKm, scene);
+    line2.draw(width / 10, height / 10, stationRadius, pixelPerKm, scene);
   }
 }
