@@ -13,6 +13,7 @@ public class DaoStationImpl implements DaoStation {
 
   private static final String SQL_SELECT_PAR_ID = "SELECT * FROM station WHERE id = ?";
   private static final String SQL_SELECT_PAR_LINE_ID = "SELECT * FROM station WHERE id_line = ?";
+  private static final String SQL_SELECT_ALL_STATIONS = "SELECT * FROM station";
 
   private DAOFactory daoFactory;
 
@@ -61,6 +62,34 @@ public class DaoStationImpl implements DaoStation {
       connection = daoFactory.getConnection();
       preparedStatement =
           DAOUtil.initialisationRequetePreparee(connection, SQL_SELECT_PAR_LINE_ID, false, lineId);
+      resultSet = preparedStatement.executeQuery();
+
+      /* Parcours de la ligne de données retournér dans le ResultSet */
+      while (resultSet.next()) {
+        station = map(resultSet);
+        stations.add(station);
+      }
+    } catch (SQLException e) {
+      throw new DAOException("Erreur dans la méthode 'getStationById()'. " + e.getMessage());
+    } finally {
+      DAOUtil.fermetureSilencieuse(resultSet, preparedStatement, connection);
+    }
+
+    return stations;
+  }
+  
+  @Override
+   public List<Station> getAllStations() throws DAOException {
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+    ResultSet resultSet = null;
+    List<Station> stations = new ArrayList<Station>();
+    Station station = null;
+
+    try {
+      connection = daoFactory.getConnection();
+      preparedStatement =
+          DAOUtil.initialisationRequetePreparee(connection, SQL_SELECT_ALL_STATIONS, false);
       resultSet = preparedStatement.executeQuery();
 
       /* Parcours de la ligne de données retournér dans le ResultSet */

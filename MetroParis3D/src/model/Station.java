@@ -82,7 +82,6 @@ public class Station {
 
   @Override
   public String toString() {
-    return getId() + ": " + getName() + " (ligne " + getLine() + "), latitude=" + getLatitude()
-        + ", longitude=" + getLongitude();
+    return getId() + ": " + getName() ;
   }
 }
