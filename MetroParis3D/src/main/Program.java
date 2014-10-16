@@ -1,3 +1,5 @@
+package main;
+
 import java.awt.Frame;
 
 import model.MetroMap;
@@ -5,8 +7,6 @@ import processing.core.PApplet;
 import remixlab.proscene.Scene;
 import controlP5.ControlP5;
 import dao.DAOException;
-
-
 
 public class Program extends PApplet {
 
@@ -22,7 +22,8 @@ public class Program extends PApplet {
   }
 
   public void setup() {
-    size(1420, 1200, P3D);
+    // size(1420, 1200, P3D);
+    size(900, 800, P3D);
 
 
     noStroke();
@@ -31,11 +32,8 @@ public class Program extends PApplet {
     scene.setAxisIsDrawn(false);
     scene.setGridIsDrawn(false);
 
-
-
     metroMap = new MetroMap(this);
     cf = createGUIWindow("PanneauControl", 500, 1200);
-
   }
 
   public void draw() {
@@ -43,10 +41,9 @@ public class Program extends PApplet {
     background(def);
     lights();
 
-
     try {
 
-      metroMap.drawMetroLines(new int[] {1, 2, 3, 4}, scene);
+      metroMap.drawAllMetroLines(scene);
 
     } catch (DAOException e) {
       e.printStackTrace();

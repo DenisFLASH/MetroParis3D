@@ -17,4 +17,11 @@ public class Edge {
   public double getWeight() {
     return weight;
   }
+
+  @Override
+  public String toString() {
+    return "[target=" + target.getId() + ":" + target.getName() + ", weight=" + weight + "]";
+  }
+
+
 }

@@ -7,6 +7,74 @@ import java.util.PriorityQueue;
 
 public class DijkstraExample {
 
+  public static void main(String[] args) {
+    List<Vertex> vertices = initializeVertices();
+    computePaths(vertices.get(0));
+
+    // print out shortest paths and distances
+    for (Vertex v : vertices) {
+      System.out.println("\n\nDistance to " + v.getName() + ": " + v.getMinDistance());
+      List<Vertex> path = getShortestPathTo(v);
+      displayPath(path);
+    }
+  }
+
+  // Initialize graph
+  private static List<Vertex> initializeVertices() {
+    List<Vertex> vertices = new ArrayList<Vertex>();
+
+    Vertex v0 = new Vertex(0, "Harrisburg");
+    Vertex v1 = new Vertex(1, "Baltimore");
+    Vertex v2 = new Vertex(2, "Washington");
+    Vertex v3 = new Vertex(3, "Philadelphia");
+    Vertex v4 = new Vertex(4, "Binghamton");
+    Vertex v5 = new Vertex(5, "Allentown");
+    Vertex v6 = new Vertex(6, "New York");
+
+    List<Edge> edgesOf0 = new ArrayList<Edge>();
+    List<Edge> edgesOf1 = new ArrayList<Edge>();
+    List<Edge> edgesOf2 = new ArrayList<Edge>();
+    List<Edge> edgesOf3 = new ArrayList<Edge>();
+    List<Edge> edgesOf4 = new ArrayList<Edge>();
+    List<Edge> edgesOf5 = new ArrayList<Edge>();
+    List<Edge> edgesOf6 = new ArrayList<Edge>();
+
+    edgesOf0.add(new Edge(v1, 79.83));
+    edgesOf0.add(new Edge(v5, 81.15));
+    edgesOf1.add(new Edge(v0, 79.75));
+    edgesOf1.add(new Edge(v2, 39.42));
+    edgesOf1.add(new Edge(v3, 103.00));
+    edgesOf2.add(new Edge(v1, 38.65));
+    edgesOf3.add(new Edge(v1, 102.53));
+    edgesOf3.add(new Edge(v5, 61.44));
+    edgesOf3.add(new Edge(v6, 96.79));
+    edgesOf4.add(new Edge(v5, 133.04));
+    edgesOf5.add(new Edge(v0, 81.77));
+    edgesOf5.add(new Edge(v3, 62.05));
+    edgesOf5.add(new Edge(v4, 134.47));
+    edgesOf5.add(new Edge(v6, 91.63));
+    edgesOf6.add(new Edge(v3, 97.24));
+    edgesOf6.add(new Edge(v5, 87.94));
+
+    v0.setEdges(edgesOf0);
+    v1.setEdges(edgesOf1);
+    v2.setEdges(edgesOf2);
+    v3.setEdges(edgesOf3);
+    v4.setEdges(edgesOf4);
+    v5.setEdges(edgesOf5);
+    v6.setEdges(edgesOf6);
+
+    vertices.add(v0);
+    vertices.add(v1);
+    vertices.add(v2);
+    vertices.add(v3);
+    vertices.add(v4);
+    vertices.add(v5);
+    vertices.add(v6);
+
+    return vertices;
+  }
+
   public static void computePaths(Vertex source) {
     source.setMinDistance(0.);
 
@@ -51,40 +119,10 @@ public class DijkstraExample {
     return path;
   }
 
-  // Initialize graph
-  public static void main(String[] args) {
-    Vertex v0 = new Vertex("Harrisburg");
-    Vertex v1 = new Vertex("Baltimore");
-    Vertex v2 = new Vertex("Washington");
-    Vertex v3 = new Vertex("Philadelphia");
-    Vertex v4 = new Vertex("Binghamton");
-    Vertex v5 = new Vertex("Allentown");
-    Vertex v6 = new Vertex("New York");
-    v0.setEdges(new Edge[] {new Edge(v1, 79.83), new Edge(v5, 81.15)});
-    v1.setEdges(new Edge[] {new Edge(v0, 79.75), new Edge(v2, 39.42), new Edge(v3, 103.00)});
-    v2.setEdges(new Edge[] {new Edge(v1, 38.65)});
-    v3.setEdges(new Edge[] {new Edge(v1, 102.53), new Edge(v5, 61.44), new Edge(v6, 96.79)});
-    v4.setEdges(new Edge[] {new Edge(v5, 133.04)});
-    v5.setEdges(new Edge[] {new Edge(v0, 81.77), new Edge(v3, 62.05), new Edge(v4, 134.47),
-        new Edge(v6, 91.63)});
-    v6.setEdges(new Edge[] {new Edge(v3, 97.24), new Edge(v5, 87.94)});
-
-    Vertex[] vertices = {v0, v1, v2, v3, v4, v5, v6};
-
-    computePaths(v0);
-
-    // print out shortest paths and distances
-    for (Vertex v : vertices) {
-      System.out.println("\n\nDistance to " + v.getId() + ": " + v.getMinDistance());
-      List<Vertex> path = getShortestPathTo(v);
-      displayPath(path);
-    }
-  }
-
   private static void displayPath(List<Vertex> path) {
     String prefix = "";
     for (Vertex vertex : path) {
-      System.out.print(prefix + vertex.getId());
+      System.out.print(prefix + vertex.getName());
       prefix = " -> ";
     }
   }

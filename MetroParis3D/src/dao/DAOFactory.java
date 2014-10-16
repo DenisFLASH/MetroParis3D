@@ -81,4 +81,8 @@ public class DAOFactory {
   public DaoLine getDaoLine() {
     return new DaoLineImpl(this);
   }
+
+  public DaoMetroGraph getDaoMetroGraph() {
+    return new DaoMetroGraphImpl(this);
+  }
 }

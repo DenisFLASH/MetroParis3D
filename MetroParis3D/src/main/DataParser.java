@@ -1,3 +1,5 @@
+package main;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -22,12 +24,13 @@ import java.util.regex.Pattern;
 public class DataParser {
 
   public static void main(String[] args) {
-    int startingId = 76;
-    int idLine = 4;
-    Map<String, List<Double>> stationMap = parseFile("raw_GPS_data/line4", idLine, startingId);
-    Map<String, List<Double>> sortedMap = sortByComparator(stationMap, 0, false);
-    displayMap(sortedMap, idLine, startingId);
-    generateNeighbors(77, 101);
+    // int startingId = 376;
+    // int idLine = 16;
+    // Map<String, List<Double>> stationMap = parseFile("raw_GPS_data/line7bis", idLine,
+    // startingId);
+    // Map<String, List<Double>> sortedMap = sortByComparator(stationMap, 1, true);
+    // displayMap(sortedMap, idLine, startingId);
+    generateNeighbors(191, 228);
   }
 
   private static Map<String, List<Double>> parseFile(String filename, int idLine, int id) {
@@ -133,9 +136,13 @@ public class DataParser {
   }
 
   public static void generateNeighbors(int startIndex, int endIndex) {
-    for (int index = startIndex; index <= endIndex; index++) {
-      System.out.println("(" + index + ", " + (index - 1) + ", " + (index + 1) + "),");
+    System.out.println("INSERT INTO neighbors (id_station, id_station_neighbor) VALUES ");
+    System.out.println("(" + startIndex + ", " + (startIndex + 1) + "),");
+    for (int index = startIndex + 1; index < endIndex; index++) {
+      System.out.println("(" + index + ", " + (index - 1) + "),");
+      System.out.println("(" + index + ", " + (index + 1) + "),");
     }
+    System.out.println("(" + endIndex + ", " + (endIndex - 1) + ");");
   }
 
 }

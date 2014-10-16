@@ -63,6 +63,7 @@ public class DaoLineImpl implements DaoLine {
     ResultSet resultSet = null;
     List<Line> lines = new ArrayList<Line>();
     Line line = null;
+    DaoStation daoStation = daoFactory.getDaoStation();
 
     try {
       connection = daoFactory.getConnection();
@@ -73,6 +74,8 @@ public class DaoLineImpl implements DaoLine {
       /* Parcours de la ligne de données retournér dans le ResultSet */
       while (resultSet.next()) {
         line = map(resultSet);
+        List<Station> stations = daoStation.getStationsByLineId(line.getId());
+        line.setStations(stations);
         lines.add(line);
       }
     } catch (SQLException e) {

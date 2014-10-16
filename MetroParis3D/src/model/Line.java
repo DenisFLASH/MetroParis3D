@@ -2,6 +2,7 @@ package model;
 
 import java.util.List;
 
+import main.Geometry;
 import processing.core.PApplet;
 import remixlab.proscene.Scene;
 
@@ -39,10 +40,11 @@ public class Line {
 
     for (int stationIndex = 0; stationIndex < stations.size(); stationIndex++) {
       Station station = stations.get(stationIndex);
-      double[] relativeXY =
-          GPSToXY(station.getLatitude(), station.getLongitude(), LAT_START, LONG_START, pixelPerKm);
-      float xCurrent = (float) relativeXY[0];
-      float yCurrent = (float) relativeXY[1];
+      double[] relativeKm =
+          Geometry.GPSToKm(station.getLatitude(), station.getLongitude(), LAT_START, LONG_START);
+
+      float xCurrent = (float) relativeKm[0] * pixelPerKm;
+      float yCurrent = (float) relativeKm[1] * pixelPerKm;
 
       app.pushMatrix();
       app.translate(xCurrent, yCurrent);
@@ -55,8 +57,8 @@ public class Line {
         float deltaX = xCurrent - xPrevious;
         float deltaY = yCurrent - yPrevious;
         float r = stationRadius / 2;
-        float distance = getDistance(deltaX, deltaY);
-        float tunnelHorizonAngle = getAngle(Math.abs(deltaX), deltaY);
+        float distance = Geometry.getDistance(deltaX, deltaY);
+        float tunnelHorizonAngle = Geometry.getAngle(Math.abs(deltaX), deltaY);
 
         if (deltaX == 0) {
           app.rotateX((float) -Math.PI / 2 * Math.signum(deltaY));
@@ -77,14 +79,6 @@ public class Line {
     app.popMatrix(); // Etat 0: pour redessiner le slider au bon endroit
   }
 
-  public static float getDistance(float deltaX, float deltaY) {
-    return (float) Math.sqrt(Math.pow(deltaX, 2.0) + Math.pow(deltaY, 2.0));
-  }
-
-  public static float getAngle(float deltaX, float deltaY) {
-    return (float) Math.atan(deltaY / deltaX);
-  }
-
   public static int[] getRGBColor(String hexColorString) {
     int[] result = new int[3];
     if (hexColorString != null && hexColorString.length() == 6) {
@@ -93,16 +87,6 @@ public class Line {
       result[2] = Integer.parseInt(hexColorString.substring(4, 6), 16);
     }
     return result;
-  }
-
-  public static double[] GPSToXY(double latitude, double longitude, double latitudeStart,
-      double longitudeStart, int pixPerKm) {
-
-    double[] coords = new double[2];
-    double kmPerRad = 40075 / 360;
-    coords[0] = (longitude - longitudeStart) * pixPerKm * kmPerRad * Math.cos(latitudeStart);
-    coords[1] = -(latitude - latitudeStart) * pixPerKm * kmPerRad;
-    return coords;
   }
 
   @Override

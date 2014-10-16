@@ -82,6 +82,6 @@ public class Station {
 
   @Override
   public String toString() {
-    return getId() + ": " + getName() ;
+    return getId() + ": " + getName() + "(" + getLine() + ")";
   }
 }
