@@ -11,28 +11,44 @@ package model;
  */
 public class Itinerary {
 
-  private int depart;
-  private int arrivee;
+  private int _depart;
+  private int _arrivee;
+
+
+   public Itinerary() {
+       
+    }
+  
+  public Itinerary(int depart) {
+        _depart = depart;
+    }
+
 
   public Itinerary(int depart, int arrivee) {
-    this.depart = depart;
-    this.arrivee = arrivee;
+    _depart = depart;
+    _arrivee = arrivee;
   }
 
+    public Itinerary(int _depart, int _arrivee, int _ligne) {
+        this._depart = _depart;
+        this._arrivee = _arrivee;
+    }
+
+
   public int getDepart() {
-    return depart;
+    return _depart;
   }
 
   public void setDepart(int depart) {
-    this.depart = depart;
+    _depart = depart;
   }
 
   public int getArrivee() {
-    return arrivee;
+    return _arrivee;
   }
 
   public void setArrivee(int arrivee) {
-    this.arrivee = arrivee;
+    _arrivee = arrivee;
   }
 
 
