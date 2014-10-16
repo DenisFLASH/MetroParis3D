@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import model.Line;
@@ -11,8 +12,8 @@ import model.Station;
 
 public class DaoLineImpl implements DaoLine {
 
-  private static final String SQL_SELECT_PAR_ID = "SELECT * FROM line WHERE id = ?";
-  private static final String SQL_SELECT_ALL = "SELECT * FROM line";
+  private static final String SQL_SELECT_LINE_PAR_ID = "SELECT * FROM line WHERE id = ?";
+  private static final String SQL_SELECT_ALL_LINES = "SELECT * FROM line";
 
   private DAOFactory daoFactory;
 
@@ -35,7 +36,7 @@ public class DaoLineImpl implements DaoLine {
     try {
       connection = daoFactory.getConnection();
       preparedStatement =
-          DAOUtil.initialisationRequetePreparee(connection, SQL_SELECT_PAR_ID, false, id);
+          DAOUtil.initialisationRequetePreparee(connection, SQL_SELECT_LINE_PAR_ID, false, id);
       resultSet = preparedStatement.executeQuery();
 
       if (resultSet.next()) {
@@ -57,8 +58,30 @@ public class DaoLineImpl implements DaoLine {
 
   @Override
   public List<Line> getAllLines() throws DAOException {
-    // TODO Auto-generated method stub
-    return null;
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+    ResultSet resultSet = null;
+    List<Line> lines = new ArrayList<Line>();
+    Line line = null;
+
+    try {
+      connection = daoFactory.getConnection();
+      preparedStatement =
+          DAOUtil.initialisationRequetePreparee(connection, SQL_SELECT_ALL_LINES, false);
+      resultSet = preparedStatement.executeQuery();
+
+      /* Parcours de la ligne de données retournér dans le ResultSet */
+      while (resultSet.next()) {
+        line = map(resultSet);
+        lines.add(line);
+      }
+    } catch (SQLException e) {
+      throw new DAOException("Erreur dans la méthode 'getStationById()'. " + e.getMessage());
+    } finally {
+      DAOUtil.fermetureSilencieuse(resultSet, preparedStatement, connection);
+    }
+
+    return lines;
   }
 
   /*

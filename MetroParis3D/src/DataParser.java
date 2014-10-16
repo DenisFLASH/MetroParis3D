@@ -27,6 +27,7 @@ public class DataParser {
     Map<String, List<Double>> stationMap = parseFile("raw_GPS_data/line4", idLine, startingId);
     Map<String, List<Double>> sortedMap = sortByComparator(stationMap, 0, false);
     displayMap(sortedMap, idLine, startingId);
+    generateNeighbors(77, 101);
   }
 
   private static Map<String, List<Double>> parseFile(String filename, int idLine, int id) {
@@ -128,6 +129,12 @@ public class DataParser {
   public static void printMap(Map<String, Integer> map) {
     for (Entry<String, Integer> entry : map.entrySet()) {
       System.out.println("Key : " + entry.getKey() + " Value : " + entry.getValue());
+    }
+  }
+
+  public static void generateNeighbors(int startIndex, int endIndex) {
+    for (int index = startIndex; index <= endIndex; index++) {
+      System.out.println("(" + index + ", " + (index - 1) + ", " + (index + 1) + "),");
     }
   }
 

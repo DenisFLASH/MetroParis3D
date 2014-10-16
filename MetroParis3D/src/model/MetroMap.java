@@ -33,7 +33,6 @@ public class MetroMap {
   public void drawMetroLines(int[] lines, Scene scene) throws DAOException {
 
     for (int i = 0; i < lines.length; i++) {
-      System.out.println("Line " + lines[i]);
       Line line = daoLine.getLineById(lines[i]);
       line.setApp(app);
       line.draw(X0, Y0, STATION_RADIUS, PIXEL_PER_KM, scene);

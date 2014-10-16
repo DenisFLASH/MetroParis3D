@@ -39,29 +39,37 @@ public class Line {
 
     for (int stationIndex = 0; stationIndex < stations.size(); stationIndex++) {
       Station station = stations.get(stationIndex);
-      double[] deltaXY =
+      double[] relativeXY =
           GPSToXY(station.getLatitude(), station.getLongitude(), LAT_START, LONG_START, pixelPerKm);
-      float xCurrent = (float) deltaXY[0];
-      float yCurrent = (float) deltaXY[1];
+      float xCurrent = (float) relativeXY[0];
+      float yCurrent = (float) relativeXY[1];
 
-      app.pushMatrix(); // Etat 1: (x0, y0)
+      app.pushMatrix();
       app.translate(xCurrent, yCurrent);
       app.fill(lineColor);
       app.sphere(stationRadius);
 
-      // Dessiner le tunnel, si ce n'est pas la station de départ
+      // Dessiner le tunnel, si ce n'est pas la première station
       if (stationIndex != 0) {
+        app.pushMatrix();
+        float deltaX = xCurrent - xPrevious;
+        float deltaY = yCurrent - yPrevious;
         float r = stationRadius / 2;
-        float distance = getDistance(xPrevious, yPrevious, xCurrent, yCurrent);
-        float tunnelHorizonAngle = getAngle(xPrevious, yPrevious, xCurrent, yCurrent);
-        app.pushMatrix(); // Etat 2: avant dessin du tunnel
-        app.rotateY((float) -Math.PI / 2);
-        app.rotateX(tunnelHorizonAngle);
+        float distance = getDistance(deltaX, deltaY);
+        float tunnelHorizonAngle = getAngle(Math.abs(deltaX), deltaY);
+
+        if (deltaX == 0) {
+          app.rotateX((float) -Math.PI / 2 * Math.signum(deltaY));
+        } else {
+          float signum = Math.signum(deltaX);
+          app.rotateY((float) -(signum * Math.PI / 2));
+          app.rotateX(tunnelHorizonAngle);
+        }
         scene.cylinder(r, distance);
-        app.popMatrix(); // Etat 2
+        app.popMatrix();
       }
 
-      app.popMatrix(); // Etat 1
+      app.popMatrix();
       // Avant l'itération suivante on met à jour les coordonnées
       xPrevious = xCurrent;
       yPrevious = yCurrent;
@@ -69,15 +77,11 @@ public class Line {
     app.popMatrix(); // Etat 0: pour redessiner le slider au bon endroit
   }
 
-  public static float getDistance(float x1, float y1, float x2, float y2) {
-    double deltaX = x2 - x1;
-    double deltaY = y2 - y1;
+  public static float getDistance(float deltaX, float deltaY) {
     return (float) Math.sqrt(Math.pow(deltaX, 2.0) + Math.pow(deltaY, 2.0));
   }
 
-  public static float getAngle(float x1, float y1, float x2, float y2) {
-    double deltaX = x2 - x1;
-    double deltaY = y2 - y1;
+  public static float getAngle(float deltaX, float deltaY) {
     return (float) Math.atan(deltaY / deltaX);
   }
 
@@ -100,13 +104,6 @@ public class Line {
     coords[1] = -(latitude - latitudeStart) * pixPerKm * kmPerRad;
     return coords;
   }
-
-
-  // public double getDistanceBetweenTwoStations(int indexStation1, int indexStation2) {
-  // double distance = 0.0;
-  //
-  // return distance;
-  // }
 
   @Override
   public String toString() {

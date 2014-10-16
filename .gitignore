@@ -1,2 +1,6 @@
 /MetroParis3D/nbproject/*
+/MetroParis3D/bin/*
+/MetroParis3D/libs/*
 /files/*
+.classpath
+.project
