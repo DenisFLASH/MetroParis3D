@@ -15,11 +15,11 @@ public class Geometry {
   public static double[] GPSToKm(double latitude, double longitude, double latitudeStart,
       double longitudeStart) {
 
-    double avgLat = (latitude + latitudeStart) / 2;
+    // double avgLat = (latitude + latitudeStart) / 2;
 
     double[] deltaXY = new double[2];
     double kmPerRad = 40075 / 360;
-    deltaXY[0] = (longitude - longitudeStart) * kmPerRad * Math.cos(avgLat);
+    deltaXY[0] = (longitude - longitudeStart) * kmPerRad * Math.cos(/* avgLat */latitudeStart);
     deltaXY[1] = -(latitude - latitudeStart) * kmPerRad;
     return deltaXY;
   }

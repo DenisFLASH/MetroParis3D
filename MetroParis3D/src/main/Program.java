@@ -1,12 +1,14 @@
 package main;
 
-import controlP5.ControlP5;
-import dao.DAOException;
 import java.awt.Frame;
+
 import model.MetroMap;
 import processing.core.PApplet;
 import remixlab.proscene.Camera;
 import remixlab.proscene.Scene;
+import shortest_path.MetroGraph;
+import controlP5.ControlP5;
+import dao.DAOException;
 
 public class Program extends PApplet {
 
@@ -14,6 +16,7 @@ public class Program extends PApplet {
   ControlP5 cp5;
   Scene scene;
   MetroMap metroMap;
+  MetroGraph metroGraph;
   PanneauControl cf;
   int def;
 
@@ -23,23 +26,36 @@ public class Program extends PApplet {
   }
 
   public void setup() {
-    size(1420, 1200, P3D);
-
+    size(1000, 700, P3D);
+    cf = createGUIWindow("PanneauControl", 500, 700);
 
     noStroke();
     scene = new Scene(this);
     scene.setRadius(800);
     scene.setAxisIsDrawn(false);
     cam = new Camera(scene);
-   // cam.setPosition(new PVector(55,5,25));
-   // cam.setOrientation(null);
-    cam.setOrientation(150,600);
-
-    
+    // cam.setPosition(new PVector(55,5,25));
+    // cam.setOrientation(null);
+    cam.setOrientation(150, 600);
     scene.setCamera(cam);
-    metroMap = new MetroMap(this);
-    cf = createGUIWindow("PanneauControl", 500, 1200);
 
+    // Initialisation de la carte de metro
+    try {
+
+      long startTime = System.currentTimeMillis();
+      System.out.println("initializing MetroMap...");
+      metroMap = new MetroMap(this);
+      long time1 = System.currentTimeMillis();
+      System.out.println("\nMetroMap initialization time: " + (time1 - startTime) + " ms\n\n");
+
+      // System.out.println("initializing graph...");
+      // metroGraph = new MetroGraph();
+      // long time2 = System.currentTimeMillis();
+      // System.out.println("\nGraph initialization time: " + (time2 - time1) + " ms\n\n");
+
+    } catch (DAOException e) {
+      e.printStackTrace();
+    }
   }
 
   public void draw() {
@@ -47,17 +63,9 @@ public class Program extends PApplet {
     background(def);
     lights();
 
-
-    try {
-
-      metroMap.drawAllMetroLines(scene);
-
-    } catch (DAOException e) {
-      e.printStackTrace();
-    }
-
+    // metroMap.drawAllMetroLines(scene);
+    metroMap.drawAllMap(scene, metroMap.getStations());
   }
-
 
   public PanneauControl createGUIWindow(String theName, int theWidth, int theHeight) {
 

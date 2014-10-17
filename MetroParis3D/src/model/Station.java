@@ -7,30 +7,16 @@ public class Station {
   private int id;
   private String name;
   private int line;
+  private String currentDrawColor;
   private double latitude;
   private double longitude;
+  private List<Station> neighbors;
   private List<Station> transferStations;
 
-  public Station() {}
+  private double minDistance = Double.POSITIVE_INFINITY;
+  private Station previous;
 
-  // Ce constructeur était utilisé pour instancier des stations "en dur", avant d'implémenter JDBC.
-  // public Station(int id, String name, int line, double latitude, double longitude) {
-  // this.id = id;
-  // this.name = name;
-  // this.line = line;
-  // this.latitude = latitude;
-  // this.longitude = longitude;
-  // }
-  //
-  // public Station(int id, String name, int line, double latitude, double longitude,
-  // List<Station> transferStations) {
-  // this.id = id;
-  // this.name = name;
-  // this.line = line;
-  // this.latitude = latitude;
-  // this.longitude = longitude;
-  // this.transferStations = transferStations;
-  // }
+  public Station() {}
 
   public int getId() {
     return id;
@@ -56,6 +42,14 @@ public class Station {
     this.line = line;
   }
 
+  public String getCurrentDrawColor() {
+    return currentDrawColor;
+  }
+
+  public void setCurrentDrawColor(String currentDrawColor) {
+    this.currentDrawColor = currentDrawColor;
+  }
+
   public double getLatitude() {
     return latitude;
   }
@@ -72,12 +66,36 @@ public class Station {
     this.longitude = longitude;
   }
 
+  public List<Station> getNeighbors() {
+    return neighbors;
+  }
+
+  public void setNeighbors(List<Station> neighbors) {
+    this.neighbors = neighbors;
+  }
+
   public List<Station> getTransferStations() {
     return transferStations;
   }
 
   public void setTransferStations(List<Station> transferStations) {
     this.transferStations = transferStations;
+  }
+
+  public double getMinDistance() {
+    return minDistance;
+  }
+
+  public void setMinDistance(double minDistance) {
+    this.minDistance = minDistance;
+  }
+
+  public Station getPrevious() {
+    return previous;
+  }
+
+  public void setPrevious(Station previous) {
+    this.previous = previous;
   }
 
   @Override
