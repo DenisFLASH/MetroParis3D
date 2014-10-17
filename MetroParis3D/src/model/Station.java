@@ -1,8 +1,9 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class Station {
+public class Station implements Comparable<Station> {
 
   private int id;
   private String name;
@@ -10,13 +11,19 @@ public class Station {
   private String currentDrawColor;
   private double latitude;
   private double longitude;
-  private List<Station> neighbors;
-  private List<Station> transferStations;
+  private List<Edge> neighborEdges = new ArrayList<Edge>();
+  private List<Edge> transferEdges = new ArrayList<Edge>();
 
   private double minDistance = Double.POSITIVE_INFINITY;
   private Station previous;
 
   public Station() {}
+
+  // Pour être utilisé dans PriorityQueue (en appliquant Dijkstra)
+  @Override
+  public int compareTo(Station other) {
+    return Double.compare(minDistance, other.getMinDistance());
+  }
 
   public int getId() {
     return id;
@@ -66,20 +73,20 @@ public class Station {
     this.longitude = longitude;
   }
 
-  public List<Station> getNeighbors() {
-    return neighbors;
+  public List<Edge> getNeighborEdges() {
+    return neighborEdges;
   }
 
-  public void setNeighbors(List<Station> neighbors) {
-    this.neighbors = neighbors;
+  public void setNeighborsEdges(List<Edge> neighborEdges) {
+    this.neighborEdges = neighborEdges;
   }
 
-  public List<Station> getTransferStations() {
-    return transferStations;
+  public List<Edge> getTransferEdges() {
+    return transferEdges;
   }
 
-  public void setTransferStations(List<Station> transferStations) {
-    this.transferStations = transferStations;
+  public void setTransferEdges(List<Edge> transferEdges) {
+    this.transferEdges = transferEdges;
   }
 
   public double getMinDistance() {
@@ -98,8 +105,15 @@ public class Station {
     this.previous = previous;
   }
 
+
+  public String shortInfo() {
+    return getId() + ": " + getName() + "(" + getLine() + ")";
+  }
+
   @Override
   public String toString() {
-    return getId() + ": " + getName() + "(" + getLine() + ")";
+    return "Station [id=" + id + ", name=" + name + ", neighbors=[" + neighborEdges
+        + "], transfers = [" + transferEdges + "], minDistance=" + minDistance + ", previous="
+        + previous + "]";
   }
 }

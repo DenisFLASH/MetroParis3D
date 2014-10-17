@@ -7,7 +7,7 @@ public class Vertex implements Comparable<Vertex> {
 
   private final int id;
   private final String name;
-  private List<Edge> edges = new ArrayList<Edge>();
+  private List<Edge_old> edges = new ArrayList<Edge_old>();
 
   private double minDistance = Double.POSITIVE_INFINITY;
   private Vertex previous;
@@ -30,11 +30,11 @@ public class Vertex implements Comparable<Vertex> {
     return name;
   }
 
-  public List<Edge> getEdges() {
+  public List<Edge_old> getEdges() {
     return edges;
   }
 
-  public void setEdges(List<Edge> edges) {
+  public void setEdges(List<Edge_old> edges) {
     this.edges = edges;
   }
 
@@ -63,7 +63,7 @@ public class Vertex implements Comparable<Vertex> {
   public String initialInfo() {
     String edgesText = "";
     String prefix = "";
-    for (Edge edge : edges) {
+    for (Edge_old edge : edges) {
       edgesText += prefix + edge.toString();
       prefix = " , ";
     }

@@ -22,6 +22,13 @@ public class MetroMapTest {
     PApplet app = new PApplet();
     MetroMap metroMap = new MetroMap(app);
 
+    List<Station> vertices = metroMap.getStations();
+
+    System.out.println(vertices.size() + " vertices");
+    for (Station vertex : vertices) {
+      System.out.println(vertex);
+    }
+
     long endInitTime = System.currentTimeMillis();
     System.out.println("\nMap initialization time: " + (endInitTime - startTime) + " ms\n\n");
 
@@ -35,11 +42,23 @@ public class MetroMapTest {
 
     Station station345 = allStations.get(345 - 1); // La Fourche (13)
     System.out.println(station345);
-    assertEquals(3, station345.getNeighbors().size());
+    assertEquals(3, station345.getNeighborEdges().size());
 
     Station station28 = allStations.get(28 - 1); // Charles de Gaulle - Etoile (2)
     System.out.println(station28);
-    assertEquals(2, station28.getTransferStations().size());
-  }
+    assertEquals(2, station28.getTransferEdges().size());
 
+    // SHORTEST PATH TEST //////////////////////////////////////////////////////////
+    int idStart = 112;
+    int idFinish = 1;
+    Station start = metroMap.getStations().get(idStart - 1);
+    System.out.println("Calculating shortest paths from " + start.getId() + ":" + start.getName()
+        + " to ALL other stations");
+    metroMap.calculateShortestPathsToAll(idStart);
+
+    long endCalcTime = System.currentTimeMillis();
+    System.out.println("\n calculation time: " + (endCalcTime - endInitTime) + " ms\n\n");
+
+    metroMap.printShortestPathsToTarget(idFinish);
+  }
 }

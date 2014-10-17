@@ -1,7 +1,9 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import main.Geometry;
 import processing.core.PApplet;
@@ -50,25 +52,48 @@ public class MetroMap {
 
     stations = new ArrayList<Station>();
 
-    // 1. Récupérér depuis la base de données les information sur des stations
+    // 1. Récupérér depuis la base de données les information sur des stations.
+    // Remplir la liste 'stations' avec toutes les stations, SANS INITIALISER des listes d'Edge
+    // List<Line> lines = daoLine.getAllLines();
     List<Line> lines = daoLine.getAllLines();
     for (Line line : lines) {
       String lineColor = line.getColor();
       List<Station> stationsOfLine = daoStation.getStationsByLineId(line.getId());
-
-      // 2. Compléter les objets Station en leurs fournissant les références sur des
-      // stations voisins (pour dessiner des tunnels), des correspondances, ainsi que la couleur
-      // courante (qui peut être
-      // changé ensuite, quand on va afficher le chemin le plus court)
       for (Station stationOfLine : stationsOfLine) {
+
+        // couleur courante peut être changé ensuite, quand on va dessiner le chemin le plus court
         stationOfLine.setCurrentDrawColor(lineColor);
-        List<Station> neighbors = daoMetroGraph.getNeighbors(stationOfLine.getId());
-        List<Station> transferStations = daoMetroGraph.getTransferStations(stationOfLine.getId());
-        stationOfLine.setNeighbors(neighbors);
-        stationOfLine.setTransferStations(transferStations);
-        // Ajouter la station avec toutes les information dans la liste des station du MetroMap
         stations.add(stationOfLine);
       }
+    }
+
+    // Pour chaque VERTEX dans le graph initialiser des listes d'Edge
+    for (Station currentStation : stations) {
+      List<Edge> neighborEdges = currentStation.getNeighborEdges();
+      List<Edge> transferEdges = currentStation.getTransferEdges();
+
+      // 2. Parcourir toutes les STATIONS VOISINES. Le poids de Edge = distance entre les stations.
+      List<Station> neighbors = daoMetroGraph.getNeighbors(currentStation.getId());
+      for (Station neighbor : neighbors) {
+        Station targetVertex = stations.get(neighbor.getId() - 1);
+        Edge newEdge =
+            new Edge(targetVertex, Geometry.getDistanceBetweenTwoStations(currentStation, neighbor));
+        neighborEdges.add(newEdge);
+      }
+
+      // 3. Parcourir toutes les CORRESPONDANCES. Le poids entre les correspondances = distance
+      // entre les stations.
+      List<Station> transfers = daoMetroGraph.getTransferStations(currentStation.getId());
+      for (Station transfer : transfers) {
+        Station targetVertex = stations.get(transfer.getId() - 1);
+        Edge newEdge =
+            new Edge(targetVertex, Geometry.getDistanceBetweenTwoStations(currentStation, transfer));
+        transferEdges.add(newEdge);
+      }
+
+      // 4. Sauvegarder les Edges
+      currentStation.setNeighborsEdges(neighborEdges);
+      currentStation.setTransferEdges(transferEdges);
     }
   }
 
@@ -106,7 +131,9 @@ public class MetroMap {
       app.sphere(STATION_RADIUS);
 
       // Dessiner le tunnel depuis cette station jusqu'à TOUTES les stations voisines
-      for (Station neighbor : station.getNeighbors()) {
+      for (Edge neighborEdge : station.getNeighborEdges()) {
+        Station neighbor = neighborEdge.getTarget();
+
         app.pushMatrix(); // Etat 2 (xStation, yStation)
 
         double lat1 = station.getLatitude();
@@ -143,4 +170,120 @@ public class MetroMap {
     app.popMatrix(); // Etat 0: pour redessiner le slider au bon endroit
 
   }
+
+  /**
+   * Calcule les chemins les plus courts entre la station #1 de départ et TOUTES LES AUTRES
+   * stations. Les valeurs de minDistance de chaque Station sont modifiées.
+   */
+  public void calculateShortestPathsToAll(int idStart) {
+    computePaths(stations.get(idStart - 1));
+  }
+
+  public void printShortestPathsToTarget(int idFinish) {
+    Station finish = stations.get(idFinish - 1);
+    System.out.println("\n\nDistance to " + finish.getId() + ":" + finish.getName() + " = "
+        + finish.getMinDistance());
+    List<Station> path = getShortestPathTo(finish);
+    displayPath(path);
+  }
+
+  public static void computePaths(Station source) {
+    source.setMinDistance(0.0);
+
+    System.out.println("source = " + source);
+    // Using PriorityQueue class with minDistance as a priority (see the comparator of Station)
+    PriorityQueue<Station> vertexQueue = new PriorityQueue<Station>();
+    vertexQueue.add(source);
+
+    while (!vertexQueue.isEmpty()) {
+      Station u = vertexQueue.poll();
+
+      // Visit each NEIGHBOR edge exiting u
+      for (Edge edge : u.getNeighborEdges()) {
+        Station v = edge.getTarget();
+        double weight = edge.getWeight();
+
+        // relax the edge (u, v) :
+        // if (u, v) is an edge and u is on the shortest path to v, then d(u) + w(u,v) = d(v).
+        double distanceThroughU = u.getMinDistance() + weight;
+
+        if (distanceThroughU < v.getMinDistance()) {
+          // The priority queue does not like when the ordering of its elements is changed, so
+          // when we change the minimum distance of any vertex, we need to remove it and re-insert
+          // it into the set.
+          vertexQueue.remove(v);
+          v.setMinDistance(distanceThroughU);
+          v.setPrevious(u);
+          vertexQueue.add(v);
+        }
+      }
+
+      // Visit each TRANSFER edge exiting u
+      for (Edge edge : u.getTransferEdges()) {
+        Station v = edge.getTarget();
+        double weight = edge.getWeight();
+
+        // relax the edge (u, v) :
+        // if (u, v) is an edge and u is on the shortest path to v, then d(u) + w(u,v) = d(v).
+        double distanceThroughU = u.getMinDistance() + weight;
+
+        if (distanceThroughU < v.getMinDistance()) {
+          // The priority queue does not like when the ordering of its elements is changed, so
+          // when we change the minimum distance of any vertex, we need to remove it and re-insert
+          // it into the set.
+          vertexQueue.remove(v);
+          v.setMinDistance(distanceThroughU);
+          v.setPrevious(u);
+          vertexQueue.add(v);
+        }
+      }
+
+      // // Visit each edge exiting u
+      // List<Edge> neighborEdges = u.getNeighborEdges();
+      // List<Edge> transferEdges = u.getTransferEdges();
+      // List<Edge> allEdges = new ArrayList<Edge>();
+      // allEdges.addAll(neighborEdges);
+      // allEdges.addAll(transferEdges);
+      // System.out.println("allEdges: " + allEdges.size());
+      // for (Edge edge : allEdges) {
+      // Station v = edge.getTarget();
+      // double weight = edge.getWeight();
+      //
+      // // relax the edge (u, v) :
+      // // if (u, v) is an edge and u is on the shortest path to v, then d(u) + w(u,v) = d(v).
+      // double distanceThroughU = u.getMinDistance() + weight;
+      //
+      // if (distanceThroughU < v.getMinDistance()) {
+      // // The priority queue does not like when the ordering of its elements is changed, so
+      // // when we change the minimum distance of any vertex, we need to remove it and re-insert
+      // // it into the set.
+      // vertexQueue.remove(v);
+      // v.setMinDistance(distanceThroughU);
+      // v.setPrevious(u);
+      // vertexQueue.add(v);
+      // }
+      // }
+
+    }
+  }
+
+  public static List<Station> getShortestPathTo(Station target) {
+    List<Station> path = new ArrayList<Station>();
+    Station vertex = target;
+    while (vertex != null) {
+      path.add(vertex);
+      vertex = vertex.getPrevious();
+    }
+    Collections.reverse(path);
+    return path;
+  }
+
+  public static void displayPath(List<Station> path) {
+    String prefix = "";
+    for (Station vertex : path) {
+      System.out.println(prefix + vertex.getName() + "(" + vertex.getId() + ")");
+      prefix = " -> ";
+    }
+  }
+
 }

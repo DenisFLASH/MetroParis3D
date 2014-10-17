@@ -31,30 +31,30 @@ public class DijkstraExample {
     Vertex v5 = new Vertex(5, "Allentown");
     Vertex v6 = new Vertex(6, "New York");
 
-    List<Edge> edgesOf0 = new ArrayList<Edge>();
-    List<Edge> edgesOf1 = new ArrayList<Edge>();
-    List<Edge> edgesOf2 = new ArrayList<Edge>();
-    List<Edge> edgesOf3 = new ArrayList<Edge>();
-    List<Edge> edgesOf4 = new ArrayList<Edge>();
-    List<Edge> edgesOf5 = new ArrayList<Edge>();
-    List<Edge> edgesOf6 = new ArrayList<Edge>();
+    List<Edge_old> edgesOf0 = new ArrayList<Edge_old>();
+    List<Edge_old> edgesOf1 = new ArrayList<Edge_old>();
+    List<Edge_old> edgesOf2 = new ArrayList<Edge_old>();
+    List<Edge_old> edgesOf3 = new ArrayList<Edge_old>();
+    List<Edge_old> edgesOf4 = new ArrayList<Edge_old>();
+    List<Edge_old> edgesOf5 = new ArrayList<Edge_old>();
+    List<Edge_old> edgesOf6 = new ArrayList<Edge_old>();
 
-    edgesOf0.add(new Edge(v1, 79.83));
-    edgesOf0.add(new Edge(v5, 81.15));
-    edgesOf1.add(new Edge(v0, 79.75));
-    edgesOf1.add(new Edge(v2, 39.42));
-    edgesOf1.add(new Edge(v3, 103.00));
-    edgesOf2.add(new Edge(v1, 38.65));
-    edgesOf3.add(new Edge(v1, 102.53));
-    edgesOf3.add(new Edge(v5, 61.44));
-    edgesOf3.add(new Edge(v6, 96.79));
-    edgesOf4.add(new Edge(v5, 133.04));
-    edgesOf5.add(new Edge(v0, 81.77));
-    edgesOf5.add(new Edge(v3, 62.05));
-    edgesOf5.add(new Edge(v4, 134.47));
-    edgesOf5.add(new Edge(v6, 91.63));
-    edgesOf6.add(new Edge(v3, 97.24));
-    edgesOf6.add(new Edge(v5, 87.94));
+    edgesOf0.add(new Edge_old(v1, 79.83));
+    edgesOf0.add(new Edge_old(v5, 81.15));
+    edgesOf1.add(new Edge_old(v0, 79.75));
+    edgesOf1.add(new Edge_old(v2, 39.42));
+    edgesOf1.add(new Edge_old(v3, 103.00));
+    edgesOf2.add(new Edge_old(v1, 38.65));
+    edgesOf3.add(new Edge_old(v1, 102.53));
+    edgesOf3.add(new Edge_old(v5, 61.44));
+    edgesOf3.add(new Edge_old(v6, 96.79));
+    edgesOf4.add(new Edge_old(v5, 133.04));
+    edgesOf5.add(new Edge_old(v0, 81.77));
+    edgesOf5.add(new Edge_old(v3, 62.05));
+    edgesOf5.add(new Edge_old(v4, 134.47));
+    edgesOf5.add(new Edge_old(v6, 91.63));
+    edgesOf6.add(new Edge_old(v3, 97.24));
+    edgesOf6.add(new Edge_old(v5, 87.94));
 
     v0.setEdges(edgesOf0);
     v1.setEdges(edgesOf1);
@@ -86,7 +86,7 @@ public class DijkstraExample {
       Vertex u = vertexQueue.poll();
 
       // Visit each edge exiting u
-      for (Edge e : u.getEdges()) {
+      for (Edge_old e : u.getEdges()) {
         Vertex v = e.getTarget();
         double weight = e.getWeight();
 

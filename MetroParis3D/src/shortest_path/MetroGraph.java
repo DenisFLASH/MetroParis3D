@@ -38,17 +38,18 @@ public class MetroGraph {
       vertices.add(new Vertex(station.getId(), station.getName()));
     }
 
-    // Pour chaque VERTEX dans le graph initialiser des listes des Edge
+    // Pour chaque VERTEX dans le graph initialiser des listes d'Edge
     for (Vertex currentVertex : vertices) {
-      List<Edge> edges = currentVertex.getEdges();
+      List<Edge_old> edges = currentVertex.getEdges();
       Station currentStation = allStations.get(currentVertex.getId() - 1);
 
       // 2. Parcourir toutes les STATIONS VOISINES. Le poids de Edge = distance entre les stations.
       List<Station> neighbors = daoMetroGraph.getNeighbors(currentVertex.getId());
       for (Station neighbor : neighbors) {
         Vertex targetVertex = vertices.get(neighbor.getId() - 1);
-        Edge newEdge =
-            new Edge(targetVertex, Geometry.getDistanceBetweenTwoStations(currentStation, neighbor));
+        Edge_old newEdge =
+            new Edge_old(targetVertex, Geometry.getDistanceBetweenTwoStations(currentStation,
+                neighbor));
         edges.add(newEdge);
       }
 
@@ -57,13 +58,13 @@ public class MetroGraph {
       List<Station> transferStations = daoMetroGraph.getTransferStations(currentVertex.getId());
       for (Station transferStation : transferStations) {
         Vertex targetVertex = vertices.get(transferStation.getId() - 1);
-        Edge newEdge =
-            new Edge(targetVertex, Geometry.getDistanceBetweenTwoStations(currentStation,
+        Edge_old newEdge =
+            new Edge_old(targetVertex, Geometry.getDistanceBetweenTwoStations(currentStation,
                 transferStation));
         edges.add(newEdge);
       }
 
-      // 3. Sauvegarder les Edges
+      // 4. Sauvegarder les Edges
       currentVertex.setEdges(edges);
     }
   }
@@ -94,7 +95,7 @@ public class MetroGraph {
       Vertex u = vertexQueue.poll();
 
       // Visit each edge exiting u
-      for (Edge edge : u.getEdges()) {
+      for (Edge_old edge : u.getEdges()) {
         Vertex v = edge.getTarget();
         double weight = edge.getWeight();
 

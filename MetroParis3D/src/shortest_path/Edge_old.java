@@ -1,11 +1,11 @@
 package shortest_path;
 
-public class Edge {
+public class Edge_old {
 
   private final Vertex target;
   private final double weight;
 
-  public Edge(Vertex target, double weight) {
+  public Edge_old(Vertex target, double weight) {
     this.target = target;
     this.weight = weight;
   }
